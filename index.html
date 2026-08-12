@@ -3,20 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>มีอะไรจะบอกแหละ... 💙</title>
-    <!-- Import Google Font น่ารักๆ -->
-    <link href="https://fonts.googleapis.com/css2?family=Mali:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>มีอะไรจาบอกด้วยแหละ ห้าห้าห้า... </title>
+    <!-- Import Google Font 'Itim' ฟอนต์ไทยตัวอ้วนอูม น่ารักสุดๆ -->
+    <link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet">
     <style>
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Mali', cursive, sans-serif;
+            font-family: 'Itim', cursive, sans-serif;
             user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 50%, #80deea 100%);
+            background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 40%, #e1f5fe 70%, #bbdefb 100%);
+            background-size: 300% 300%;
+            animation: gradientBG 10s ease infinite;
             height: 100vh;
             display: flex;
             justify-content: center;
@@ -25,7 +28,31 @@
             position: relative;
         }
 
-        /* Particles Canvas Background */
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Ambient Glowing Pastel Blobs in Background */
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(50px);
+            opacity: 0.6;
+            animation: blobFloat 12s ease-in-out infinite alternate;
+            pointer-events: none;
+        }
+        .blob-1 { width: 320px; height: 320px; background: #80deea; top: -50px; left: -50px; }
+        .blob-2 { width: 380px; height: 380px; background: #e1bee7; bottom: -80px; right: -50px; animation-delay: -4s; }
+        .blob-3 { width: 250px; height: 250px; background: #fff9c4; top: 40%; left: 60%; animation-delay: -7s; }
+
+        @keyframes blobFloat {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(30px, 40px) scale(1.15); }
+        }
+
+        /* Canvas Elements */
         #particle-canvas, #sparkle-canvas {
             position: absolute;
             top: 0;
@@ -34,123 +61,186 @@
             height: 100%;
             pointer-events: none;
         }
-
-        #particle-canvas { z-index: 1; }
+        #particle-canvas { z-index: 2; }
         #sparkle-canvas { z-index: 999; }
 
-        /* Card Box Container */
+        /* Card Frame (Polaroid / Photocard Style) */
         .card-container {
             position: relative;
             z-index: 10;
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border: 4px solid #ffffff;
-            border-radius: 30px;
-            padding: 30px 25px;
+            border-radius: 35px;
+            padding: 30px 25px 25px 25px;
             width: 90%;
-            max-width: 420px;
+            max-width: 400px;
             text-align: center;
-            box-shadow: 0 15px 35px rgba(0, 150, 136, 0.15),
-                        0 5px 15px rgba(255, 255, 255, 0.7) inset;
+            box-shadow: 0 20px 40px rgba(0, 172, 193, 0.2),
+                        0 0 25px rgba(255, 255, 255, 0.8) inset;
             animation: floatCard 4s ease-in-out infinite;
         }
 
         @keyframes floatCard {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-12px) rotate(0.5deg); }
         }
 
-        /* Step Content Toggle */
+        /* Decorative Cute Washi Tape on Top */
+        .washi-tape {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 110px;
+            height: 28px;
+            background: rgba(179, 229, 252, 0.85);
+            border: 2px dashed #4fc3f7;
+            border-radius: 6px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            z-index: 12;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            color: #0288d1;
+        }
+
+        /* Step Layout */
         .step {
             display: none;
             flex-direction: column;
             align-items: center;
-            animation: fadeIn 0.6s ease-in-out forwards;
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
 
         .step.active {
             display: flex;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.9); }
-            to { opacity: 1; transform: scale(1); }
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.8) translateY(20px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
         }
 
-        /* Text Styles */
+        /* Headings & Text */
         h1 {
             color: #00838f;
-            font-size: 1.8rem;
+            font-size: 1.9rem;
+            margin-top: 10px;
             margin-bottom: 12px;
-            text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+            text-shadow: 2px 2px 0px #ffffff;
+            line-height: 1.3;
+            letter-spacing: 0.5px;
         }
 
-        p.funny-caption {
-            color: #006064;
-            font-size: 1.05rem;
-            margin-top: 12px;
-            font-weight: 600;
-            background: #e0f7fa;
-            padding: 8px 15px;
-            border-radius: 15px;
-            display: inline-block;
-            border: 2px dashed #4dd0e1;
-        }
-
-        /* Image Display Box */
-        .img-frame {
-            width: 220px;
-            height: 220px;
-            border-radius: 20px;
-            border: 5px solid #ffffff;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-            overflow: hidden;
-            background-color: #e0f7fa;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 10px 0;
+        /* Interactive Image Box */
+        .img-card {
             position: relative;
+            width: 230px;
+            height: 230px;
+            border-radius: 25px;
+            background: #e0f7fa;
+            border: 6px solid #ffffff;
+            box-shadow: 0 10px 25px rgba(0, 150, 136, 0.15);
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin: 10px 0;
         }
 
-        .img-frame img {
+        .img-card:hover {
+            transform: scale(1.03) rotate(-1deg);
+            box-shadow: 0 15px 30px rgba(0, 172, 193, 0.3);
+        }
+
+        .img-card img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            display: block;
         }
 
-        /* Buttons */
+        /* Overlay helper text inside image box */
+        .img-card .upload-hint {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(0, 131, 143, 0.7);
+            color: #ffffff;
+            font-size: 0.85rem;
+            padding: 6px 0;
+            backdrop-filter: blur(4px);
+            transition: opacity 0.3s;
+        }
+
+        .hidden-input {
+            display: none;
+        }
+
+        /* Funny Caption Box with Random Bounce Effect */
+        .funny-caption-box {
+            margin-top: 12px;
+            background: #e0f7fa;
+            border: 2px dashed #26c6da;
+            border-radius: 20px;
+            padding: 10px 18px;
+            cursor: pointer;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+        }
+
+        .funny-caption-box:active {
+            transform: scale(0.92) rotate(-2deg);
+        }
+
+        .funny-caption-box p {
+            color: #006064;
+            font-size: 1.15rem;
+            line-height: 1.4;
+        }
+
+        .click-tip {
+            font-size: 0.75rem;
+            color: #00838f;
+            opacity: 0.7;
+            margin-top: 2px;
+        }
+
+        /* Button Next */
         .btn-next {
-            margin-top: 20px;
-            background: linear-gradient(45deg, #4dd0e1, #26c6da);
-            color: white;
-            border: none;
-            padding: 12px 35px;
-            font-size: 1.2rem;
-            font-weight: 700;
+            margin-top: 18px;
+            background: linear-gradient(135deg, #4dd0e1, #00acc1);
+            color: #ffffff;
+            border: 3px solid #ffffff;
+            padding: 12px 38px;
+            font-size: 1.3rem;
             border-radius: 50px;
             cursor: pointer;
-            box-shadow: 0 6px 18px rgba(38, 198, 218, 0.4);
-            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(0, 172, 193, 0.35);
+            transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             outline: none;
         }
 
         .btn-next:hover {
-            transform: scale(1.08);
-            background: linear-gradient(45deg, #26c6da, #00acc1);
-            box-shadow: 0 8px 22px rgba(0, 172, 193, 0.5);
+            transform: scale(1.08) translateY(-2deg);
+            background: linear-gradient(135deg, #26c6da, #00838f);
+            box-shadow: 0 12px 25px rgba(0, 172, 193, 0.45);
         }
 
         .btn-next:active {
             transform: scale(0.95);
         }
 
-        /* Indicator Dots */
+        /* Dots Indicator */
         .dots-container {
             display: flex;
             justify-content: center;
+            align-items: center;
             gap: 8px;
-            margin-top: 20px;
+            margin-top: 18px;
         }
 
         .dot {
@@ -163,76 +253,120 @@
 
         .dot.active {
             background-color: #00acc1;
-            width: 24px;
-            border-radius: 10px;
+            width: 26px;
+            border-radius: 12px;
+        }
+
+        /* Floating Pop Emoji Animation when clicking buttons */
+        .emoji-pop {
+            position: absolute;
+            font-size: 2rem;
+            pointer-events: none;
+            animation: popUpFade 1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            z-index: 100;
+        }
+
+        @keyframes popUpFade {
+            0% { opacity: 1; transform: translate(-50%, -50%) scale(0.5) rotate(0deg); }
+            100% { opacity: 0; transform: translate(-50%, -100px) scale(1.5) rotate(20deg); }
         }
     </style>
 </head>
 <body>
 
-    <!-- Background Particles -->
+    <!-- Background Pastel Blobs -->
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+
+    <!-- Canvas Effects -->
     <canvas id="particle-canvas"></canvas>
-    <!-- Mouse Trail Canvas -->
     <canvas id="sparkle-canvas"></canvas>
 
     <div class="card-container">
-        
+        <div class="washi-tape"> FOR YOU </div>
+
         <!-- หน้าที่ 1 -->
         <div class="step active" id="step1">
-            <h1>ยิ้มหน่อยสิคนเก่ง 😊</h1>
-            <div class="img-frame">
-                <!-- ใส่ URL รูปของคุณที่ src ด้านล่างนี้ -->
-                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=500&q=80" alt="รูปที่ 1">
+            <h1>ไหนยิ้มหน่อยคับ</h1>
+            <div class="img-card" onclick="triggerUpload(1)">
+                <img id="preview1" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=500&q=80" alt="รูปที่ 1">
+                <div class="upload-hint">📷 แตะเพื่อเปลี่ยนรูปภาพ</div>
             </div>
-            <p class="funny-caption">หน้าบึ้งเป็นตูดลิงแล้วนั่น... ยิ้มเร็ว! 🐒</p>
-            <button class="btn-next" onclick="nextStep(2)">ถัดไป ✨</button>
+            <input type="file" id="file1" class="hidden-input" accept="image/*" onchange="previewImage(this, 'preview1')">
+            
+            <div class="funny-caption-box" onclick="randomShake(this)">
+                <p id="cap1">หน้าบึ้งเป็นตูดมันไม่น่ารักน้ะ</p>
+                <div class="click-tip">(จิ้มจิ้มหน่อย)</div>
+            </div>
+            <button class="btn-next" onclick="nextStep(2, event)">ถัดไป </button>
         </div>
 
         <!-- หน้าที่ 2 -->
         <div class="step" id="step2">
-            <h1>ยิ้มรึยังเนี่ย? 🤨</h1>
-            <div class="img-frame">
-                <!-- ใส่ URL รูปของคุณที่ src ด้านล่างนี้ -->
-                <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=500&q=80" alt="รูปที่ 2">
+            <h1>ยิ้มรึยังเนี่ยยย </h1>
+            <div class="img-card" onclick="triggerUpload(2)">
+                <img id="preview2" src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=500&q=80" alt="รูปที่ 2">
+                <div class="upload-hint">📷 แตะเพื่อเปลี่ยนรูปภาพ</div>
             </div>
-            <p class="funny-caption">แอบอมยิ้มอยู่ใช่มั้ยล่ะ รู้นะ! 🤭</p>
-            <button class="btn-next" onclick="nextStep(3)">ถัดไป 💖</button>
+            <input type="file" id="file2" class="hidden-input" accept="image/*" onchange="previewImage(this, 'preview2')">
+
+            <div class="funny-caption-box" onclick="randomShake(this)">
+                <p id="cap2">แอบยิ้มอยู่มั้ยหน่ะ 🤔</p>
+                <div class="click-tip">(จิ้มจิ้มหน่อย)</div>
+            </div>
+            <button class="btn-next" onclick="nextStep(3, event)">ถัดไป </button>
         </div>
 
         <!-- หน้าที่ 3 -->
         <div class="step" id="step3">
-            <h1>ยิ้มน่ารักจังเลยนะ! 🤏💙</h1>
-            <div class="img-frame">
-                <!-- ใส่ URL รูปของคุณที่ src ด้านล่างนี้ -->
-                <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=500&q=80" alt="รูปที่ 3">
+            <h1>ชอบตอนคุนยิ้มที่สุดแล้ว</h1>
+            <div class="img-card" onclick="triggerUpload(3)">
+                <img id="preview3" src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=500&q=80" alt="รูปที่ 3">
+                <div class="upload-hint">📷 แตะเพื่อเปลี่ยนรูปภาพ</div>
             </div>
-            <p class="funny-caption">ยิ้มทีไร หัวใจเราวิ้บบอบตลอดเลยนะเนี่ย 🫠</p>
-            <button class="btn-next" onclick="nextStep(4)">ถัดไป 🐰</button>
+            <input type="file" id="file3" class="hidden-input" accept="image/*" onchange="previewImage(this, 'preview3')">
+
+            <div class="funny-caption-box" onclick="randomShake(this)">
+                <p id="cap3">ผมว่าผมชอบคุนหว่ะ 🫠</p>
+                <div class="click-tip">(จิ้มจิ้มเร้ว)</div>
+            </div>
+            <button class="btn-next" onclick="nextStep(4, event)">ถัดไป </button>
         </div>
 
         <!-- หน้าที่ 4 -->
         <div class="step" id="step4">
-            <h1>ตั้งใจทำงานนะขอให้คะแนนออกมาดีๆ 📝⭐</h1>
-            <div class="img-frame">
-                <!-- ใส่ URL รูปของคุณที่ src ด้านล่างนี้ -->
-                <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=500&q=80" alt="รูปที่ 4">
+            <h1>ตั้งใจตั้งใจอ่านนะขอให้คะแนนออกมาดีๆคับ🐽🐽</h1>
+            <div class="img-card" onclick="triggerUpload(4)">
+                <img id="preview4" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=500&q=80" alt="รูปที่ 4">
+                <div class="upload-hint">📷 แตะเพื่อเปลี่ยนรูปภาพ</div>
             </div>
-            <p class="funny-caption">เหนื่อยก็พัก แต่อย่านานเกินเดี๋ยวคิดถึง 🤪</p>
-            <button class="btn-next" onclick="nextStep(5)">หน้าสุดท้ายแล้ว 💌</button>
+            <input type="file" id="file4" class="hidden-input" accept="image/*" onchange="previewImage(this, 'preview4')">
+
+            <div class="funny-caption-box" onclick="randomShake(this)">
+                <p id="cap4">เหนื่อยก็พัก แต่อย่านานเกินเดี๋ยวเราคิดถึงน่ะ </p>
+                <div class="click-tip">(จิ้มจิ้มสิ้)</div>
+            </div>
+            <button class="btn-next" onclick="nextStep(5, event)">last</button>
         </div>
 
         <!-- หน้าที่ 5 -->
         <div class="step" id="step5">
-            <h1>เป็นกำลังใจให้เสมอเลยนะ! ☁️✨</h1>
-            <div class="img-frame">
-                <!-- ใส่ URL รูปของคุณที่ src ด้านล่างนี้ -->
-                <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=500&q=80" alt="รูปที่ 5">
+            <h1>เป็นกำลังใจให้เสมอเลยนะ ไม่อยากให้เครียดขอให้ผลออกมาดี:p</h1>
+            <div class="img-card" onclick="triggerUpload(5)">
+                <img id="preview5" src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=500&q=80" alt="รูปที่ 5">
+                <div class="upload-hint">📷 แตะเพื่อเปลี่ยนรูปภาพ</div>
             </div>
-            <p class="funny-caption">คะแนนเต็มสิบให้ร้อย แต่เธอให้ใจเราได้ยัง? 😳</p>
-            <button class="btn-next" onclick="nextStep(1)">วนกลับไปดูยิ้มอีกรอบ 🔄</button>
+            <input type="file" id="file5" class="hidden-input" accept="image/*" onchange="previewImage(this, 'preview5')">
+
+            <div class="funny-caption-box" onclick="randomShake(this)">
+                <p id="cap5">นึกไม่ถึงแต่คิดถึงนะ</p>
+                <div class="click-tip">(จิ้มจิ้มจิ้ม)</div>
+            </div>
+            <button class="btn-next" onclick="nextStep(1, event)">วนกลับไปดูคนน่ารัก</button>
         </div>
 
-        <!-- Dot Indicators -->
+        <!-- Dots Indicator -->
         <div class="dots-container">
             <div class="dot active" id="dot1"></div>
             <div class="dot" id="dot2"></div>
@@ -240,12 +374,16 @@
             <div class="dot" id="dot4"></div>
             <div class="dot" id="dot5"></div>
         </div>
-
     </div>
 
     <script>
-        // --- 1. Page Navigation System ---
-        function nextStep(stepNumber) {
+        // --- 1. Step & Navigation Logic ---
+        function nextStep(stepNumber, event) {
+            // Spawn Floating Emoji Animation
+            if (event) {
+                spawnEmojiPop(event.clientX, event.clientY);
+            }
+
             document.querySelectorAll('.step').forEach(step => step.classList.remove('active'));
             document.querySelectorAll('.dot').forEach(dot => dot.classList.remove('active'));
 
@@ -253,7 +391,50 @@
             document.getElementById(`dot${stepNumber}`).classList.add('active');
         }
 
-        // --- 2. Floating Bunny, Cloud & Heart Particles System ---
+        // --- 2. Interactive Image Upload Functionality ---
+        function triggerUpload(stepNum) {
+            document.getElementById(`file${stepNum}`).click();
+        }
+
+        function previewImage(input, previewId) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById(previewId).src = e.target.result;
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // --- 3. Random Text Shake & Bounce Effect ---
+        function randomShake(element) {
+            const angles = [-8, 8, -5, 5, -12, 12];
+            const scales = [1.08, 0.92, 1.12, 0.95];
+            const randomAngle = angles[Math.floor(Math.random() * angles.length)];
+            const randomScale = scales[Math.floor(Math.random() * scales.length)];
+            
+            element.style.transform = `scale(${randomScale}) rotate(${randomAngle}deg)`;
+            setTimeout(() => {
+                element.style.transform = 'scale(1) rotate(0deg)';
+            }, 300);
+        }
+
+        // --- 4. Emoji Pop Effect on Click ---
+        const emojis = ['🩵', '✨', '🐰', '💖', '☁️', '🤏', '🌸'];
+        function spawnEmojiPop(x, y) {
+            const emoji = document.createElement('div');
+            emoji.className = 'emoji-pop';
+            emoji.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+            emoji.style.left = `${x}px`;
+            emoji.style.top = `${y}px`;
+            document.body.appendChild(emoji);
+
+            setTimeout(() => {
+                emoji.remove();
+            }, 1000);
+        }
+
+        // --- 5. Slow Floating Bunny, Cloud, Heart Particles ---
         const particleCanvas = document.getElementById('particle-canvas');
         const pCtx = particleCanvas.getContext('2d');
 
@@ -264,7 +445,7 @@
         resizeParticleCanvas();
         window.addEventListener('resize', resizeParticleCanvas);
 
-        const floatingItems = ['🐰', '☁️', '🩵', '🤍', '✨'];
+        const items = ['🐰', '☁️', '🩵', '🤍', '✨', '🌸', '🧸'];
         const particles = [];
 
         class SlowParticle {
@@ -274,12 +455,12 @@
 
             reset() {
                 this.x = Math.random() * particleCanvas.width;
-                this.y = particleCanvas.height + 50;
-                this.size = Math.random() * 20 + 18;
-                this.speedY = Math.random() * 0.7 + 0.3; // ลอยขึ้นช้าๆ ฟีลความฝัน
-                this.speedX = Math.sin(Math.random() * Math.PI) * 0.5 - 0.25;
-                this.symbol = floatingItems[Math.floor(Math.random() * floatingItems.length)];
-                this.opacity = Math.random() * 0.6 + 0.4;
+                this.y = particleCanvas.height + 60;
+                this.size = Math.random() * 18 + 18;
+                this.speedY = Math.random() * 0.6 + 0.3; // ลอยขึ้นช้าๆ
+                this.speedX = Math.sin(Math.random() * Math.PI) * 0.4 - 0.2;
+                this.symbol = items[Math.floor(Math.random() * items.length)];
+                this.opacity = Math.random() * 0.5 + 0.4;
             }
 
             update() {
@@ -297,7 +478,7 @@
             }
         }
 
-        for (let i = 0; i < 25; i++) {
+        for (let i = 0; i < 28; i++) {
             particles.push(new SlowParticle());
         }
 
@@ -311,7 +492,7 @@
         }
         animateParticles();
 
-        // --- 3. Mouse Trail Effect (ละอองดาวตามเมาส์) ---
+        // --- 6. Mouse Trail Effect (ละอองดาววิ้งๆ ตามเมาส์/สัมผัส) ---
         const sparkleCanvas = document.getElementById('sparkle-canvas');
         const sCtx = sparkleCanvas.getContext('2d');
 
@@ -328,10 +509,10 @@
             constructor(x, y) {
                 this.x = x;
                 this.y = y;
-                this.size = Math.random() * 6 + 2;
-                this.speedX = (Math.random() - 0.5) * 1.5;
-                this.speedY = (Math.random() - 0.5) * 1.5;
-                this.color = `hsl(${Math.random() * 40 + 180}, 100%, 75%)`; // โทนสีฟ้าพาสเทลวิ้งๆ
+                this.size = Math.random() * 5 + 2;
+                this.speedX = (Math.random() - 0.5) * 1.6;
+                this.speedY = (Math.random() - 0.5) * 1.6;
+                this.color = `hsl(${Math.random() * 40 + 180}, 100%, 75%)`; // โทนฟ้าพาสเทลวิ้ง
                 this.opacity = 1;
                 this.decay = Math.random() * 0.02 + 0.015;
             }
@@ -347,8 +528,7 @@
                 sCtx.globalAlpha = Math.max(0, this.opacity);
                 sCtx.fillStyle = this.color;
                 sCtx.beginPath();
-                // วาดดาว 4 แฉกเล็กๆ
-                sCtx.arc(this.x, this.y, this.size / 2, 0, Math.PI * 2);
+                sCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
                 sCtx.fill();
                 sCtx.restore();
             }
@@ -358,7 +538,7 @@
             const x = e.clientX || (e.touches && e.touches[0].clientX);
             const y = e.clientY || (e.touches && e.touches[0].clientY);
             if (x && y) {
-                for (let i = 0; i < 3; i++) {
+                for (let i = 0; i < 2; i++) {
                     sparkles.push(new Sparkle(x, y));
                 }
             }
