@@ -3,562 +3,494 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>มีอะไรจาบอกด้วยแหละ ห้าห้าห้า... </title>
-    <!-- Import Google Font 'Itim' ฟอนต์ไทยตัวอ้วนอูม น่ารักสุดๆ -->
-    <link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet">
+    <title>มีอะไรจาบอกแหละ </title>
+    <!-- นำเข้าฟอนต์ Mitr ทรงน่ารัก มนๆ อ้วนๆ -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mitr:wght@400;600&display=swap" rel="stylesheet">
+    
     <style>
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Itim', cursive, sans-serif;
+            font-family: 'Mitr', sans-serif;
             user-select: none;
-            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 40%, #e1f5fe 70%, #bbdefb 100%);
-            background-size: 300% 300%;
-            animation: gradientBG 10s ease infinite;
-            height: 100vh;
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #f0f9ff 100%);
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             overflow: hidden;
             position: relative;
+            color: #0369a1;
         }
 
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* Ambient Glowing Pastel Blobs in Background */
-        .blob {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(50px);
-            opacity: 0.6;
-            animation: blobFloat 12s ease-in-out infinite alternate;
-            pointer-events: none;
-        }
-        .blob-1 { width: 320px; height: 320px; background: #80deea; top: -50px; left: -50px; }
-        .blob-2 { width: 380px; height: 380px; background: #e1bee7; bottom: -80px; right: -50px; animation-delay: -4s; }
-        .blob-3 { width: 250px; height: 250px; background: #fff9c4; top: 40%; left: 60%; animation-delay: -7s; }
-
-        @keyframes blobFloat {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(30px, 40px) scale(1.15); }
-        }
-
-        /* Canvas Elements */
-        #particle-canvas, #sparkle-canvas {
+        /* Canvas สำหรับ Background Floating Particles & Mouse Trail */
+        canvas#bgCanvas {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             pointer-events: none;
+            z-index: 1;
         }
-        #particle-canvas { z-index: 2; }
-        #sparkle-canvas { z-index: 999; }
 
-        /* Card Frame (Polaroid / Photocard Style) */
+        /* Container หลักของการ์ด */
         .card-container {
             position: relative;
             z-index: 10;
-            background: rgba(255, 255, 255, 0.88);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 4px solid #ffffff;
-            border-radius: 35px;
-            padding: 30px 25px 25px 25px;
             width: 90%;
-            max-width: 400px;
+            max-width: 420px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border-radius: 30px;
+            padding: 30px 25px;
+            box-shadow: 0 20px 40px rgba(186, 230, 253, 0.6),
+                        0 0 0 8px rgba(255, 255, 255, 0.5);
             text-align: center;
-            box-shadow: 0 20px 40px rgba(0, 172, 193, 0.2),
-                        0 0 25px rgba(255, 255, 255, 0.8) inset;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             animation: floatCard 4s ease-in-out infinite;
         }
 
         @keyframes floatCard {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-12px) rotate(0.5deg); }
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
         }
 
-        /* Decorative Cute Washi Tape on Top */
-        .washi-tape {
-            position: absolute;
-            top: -15px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 110px;
-            height: 28px;
-            background: rgba(179, 229, 252, 0.85);
-            border: 2px dashed #4fc3f7;
-            border-radius: 6px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            z-index: 12;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.85rem;
-            color: #0288d1;
-        }
-
-        /* Step Layout */
-        .step {
+        /* ซ่อนหน้าต่างๆ */
+        .page {
             display: none;
-            flex-direction: column;
-            align-items: center;
-            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            animation: fadeIn 0.5s ease-in-out forwards;
         }
 
-        .step.active {
-            display: flex;
-        }
-
-        @keyframes popIn {
-            0% { opacity: 0; transform: scale(0.8) translateY(20px); }
-            100% { opacity: 1; transform: scale(1) translateY(0); }
-        }
-
-        /* Headings & Text */
-        h1 {
-            color: #00838f;
-            font-size: 1.9rem;
-            margin-top: 10px;
-            margin-bottom: 12px;
-            text-shadow: 2px 2px 0px #ffffff;
-            line-height: 1.3;
-            letter-spacing: 0.5px;
-        }
-
-        /* Interactive Image Box */
-        .img-card {
-            position: relative;
-            width: 230px;
-            height: 230px;
-            border-radius: 25px;
-            background: #e0f7fa;
-            border: 6px solid #ffffff;
-            box-shadow: 0 10px 25px rgba(0, 150, 136, 0.15);
-            overflow: hidden;
-            cursor: pointer;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            margin: 10px 0;
-        }
-
-        .img-card:hover {
-            transform: scale(1.03) rotate(-1deg);
-            box-shadow: 0 15px 30px rgba(0, 172, 193, 0.3);
-        }
-
-        .img-card img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        .page.active {
             display: block;
         }
 
-        /* Overlay helper text inside image box */
-        .img-card .upload-hint {
-            position: absolute;
-            bottom: 0;
-            left: 0;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* รูปภาพ */
+        .img-box {
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 15px auto;
+            border-radius: 25px;
+            overflow: hidden;
+            border: 4px solid #7dd3fc;
+            box-shadow: 0 8px 20px rgba(56, 189, 248, 0.2);
+            background-color: #f0f9ff;
+        }
+
+        .img-box img {
             width: 100%;
-            background: rgba(0, 131, 143, 0.7);
-            color: #ffffff;
-            font-size: 0.85rem;
-            padding: 6px 0;
-            backdrop-filter: blur(4px);
-            transition: opacity 0.3s;
+            height: 100%;
+            object-fit: cover;
         }
 
-        .hidden-input {
-            display: none;
+        /* ข้อความ */
+        h1 {
+            font-size: 1.6rem;
+            color: #0284c7;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 0px #ffffff;
         }
 
-        /* Funny Caption Box with Random Bounce Effect */
-        .funny-caption-box {
-            margin-top: 12px;
-            background: #e0f7fa;
-            border: 2px dashed #26c6da;
-            border-radius: 20px;
-            padding: 10px 18px;
-            cursor: pointer;
-            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+        p.sub-text {
+            font-size: 1rem;
+            color: #38bdf8;
+            margin-bottom: 20px;
+            line-height: 1.5;
         }
 
-        .funny-caption-box:active {
-            transform: scale(0.92) rotate(-2deg);
-        }
-
-        .funny-caption-box p {
-            color: #006064;
-            font-size: 1.15rem;
-            line-height: 1.4;
-        }
-
-        .click-tip {
-            font-size: 0.75rem;
-            color: #00838f;
-            opacity: 0.7;
-            margin-top: 2px;
-        }
-
-        /* Button Next */
-        .btn-next {
-            margin-top: 18px;
-            background: linear-gradient(135deg, #4dd0e1, #00acc1);
-            color: #ffffff;
-            border: 3px solid #ffffff;
-            padding: 12px 38px;
-            font-size: 1.3rem;
+        /* ปุ่มกด */
+        .btn {
+            background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
+            color: white;
+            border: none;
+            padding: 12px 32px;
+            font-size: 1.1rem;
             border-radius: 50px;
             cursor: pointer;
-            box-shadow: 0 8px 20px rgba(0, 172, 193, 0.35);
-            transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 6px 15px rgba(56, 189, 248, 0.4);
+            transition: all 0.2s ease;
             outline: none;
+            display: inline-block;
+            margin-top: 10px;
         }
 
-        .btn-next:hover {
-            transform: scale(1.08) translateY(-2deg);
-            background: linear-gradient(135deg, #26c6da, #00838f);
-            box-shadow: 0 12px 25px rgba(0, 172, 193, 0.45);
+        .btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 10px 20px rgba(56, 189, 248, 0.5);
         }
 
-        .btn-next:active {
-            transform: scale(0.95);
+        .btn:active {
+            transform: translateY(1px);
         }
 
-        /* Dots Indicator */
-        .dots-container {
+        /* ส่วนของ Quiz Option */
+        .quiz-options {
             display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-            margin-top: 18px;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
         }
 
-        .dot {
-            width: 10px;
-            height: 10px;
-            background-color: #b2ebf2;
-            border-radius: 50%;
-            transition: all 0.3s ease;
+        .opt-btn {
+            background: #f0f9ff;
+            border: 2px solid #bae6fd;
+            color: #0369a1;
+            padding: 10px 15px;
+            border-radius: 18px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
         }
 
-        .dot.active {
-            background-color: #00acc1;
-            width: 26px;
-            border-radius: 12px;
+        .opt-btn:hover {
+            background: #bae6fd;
+            color: #0284c7;
+            transform: translateX(5px);
         }
 
-        /* Floating Pop Emoji Animation when clicking buttons */
-        .emoji-pop {
-            position: absolute;
-            font-size: 2rem;
-            pointer-events: none;
-            animation: popUpFade 1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        /* Popup แจ้งเตือนเวลาตอบผิด */
+        .alert-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.7);
+            background: rgba(255, 255, 255, 0.95);
+            border: 3px solid #7dd3fc;
+            padding: 20px;
+            border-radius: 25px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
             z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            text-align: center;
+            max-width: 300px;
+            width: 80%;
         }
 
-        @keyframes popUpFade {
-            0% { opacity: 1; transform: translate(-50%, -50%) scale(0.5) rotate(0deg); }
-            100% { opacity: 0; transform: translate(-50%, -100px) scale(1.5) rotate(20deg); }
+        .alert-box.show {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .alert-box p {
+            color: #f43f5e;
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .alert-box span {
+            color: #0284c7;
+            display: block;
+            margin-top: 5px;
+            font-size: 0.95rem;
+        }
+
+        .alert-box .close-btn {
+            background: #7dd3fc;
+            color: white;
+            border: none;
+            padding: 6px 20px;
+            border-radius: 20px;
+            margin-top: 10px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
 
-    <!-- Background Pastel Blobs -->
-    <div class="blob blob-1"></div>
-    <div class="blob blob-2"></div>
-    <div class="blob blob-3"></div>
+    <canvas id="bgCanvas"></canvas>
 
-    <!-- Canvas Effects -->
-    <canvas id="particle-canvas"></canvas>
-    <canvas id="sparkle-canvas"></canvas>
+    <!-- Custom Alert Popup -->
+    <div class="alert-box" id="alertBox">
+        <p>❌ คนน่ารักตอบผิด</p>
+        <div id="wrongAnswerDetail"></div>
+        <button class="close-btn" onclick="closeAlert()">ลองใหมน้ะ</button>
+    </div>
 
     <div class="card-container">
-        <div class="washi-tape"> FOR YOU </div>
-
-        <!-- หน้าที่ 1 -->
-        <div class="step active" id="step1">
-            <h1>ไหนยิ้มหน่อยคับ</h1>
-            <div class="img-card" onclick="triggerUpload(1)">
-                <img id="preview1" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=500&q=80" alt="รูปที่ 1">
-                <div class="upload-hint">📷 แตะเพื่อเปลี่ยนรูปภาพ</div>
+        
+        <!-- Page 1: ยิ้มหน่อย -->
+        <div class="page active" id="page1">
+            <div class="img-box">
+                <!-- เปลี่ยน URL รูปตามต้องการ -->
+                <img src="https://cdn.phototourl.com/free/2026-08-12-7c3ece34-2540-47ec-8a2b-6892cab63e85.jpg" alt="รูปสาวน่ารัก 1">
             </div>
-            <input type="file" id="file1" class="hidden-input" accept="image/*" onchange="previewImage(this, 'preview1')">
-            
-            <div class="funny-caption-box" onclick="randomShake(this)">
-                <p id="cap1">หน้าบึ้งเป็นตูดมันไม่น่ารักน้ะ</p>
-                <div class="click-tip">(จิ้มจิ้มหน่อย)</div>
-            </div>
-            <button class="btn-next" onclick="nextStep(2, event)">ถัดไป </button>
+            <h1>ยิ้มหน่อยยิ้มรึยัง </h1>
+            <p class="sub-text">ห้ามหน้าบึ้ง</p>
+            <button class="btn" onclick="nextPage(2)">Next ➔</button>
         </div>
 
-        <!-- หน้าที่ 2 -->
-        <div class="step" id="step2">
-            <h1>ยิ้มรึยังเนี่ยยย </h1>
-            <div class="img-card" onclick="triggerUpload(2)">
-                <img id="preview2" src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=500&q=80" alt="รูปที่ 2">
-                <div class="upload-hint">📷 แตะเพื่อเปลี่ยนรูปภาพ</div>
+        <!-- Page 2: ยิ้มรึยัง -->
+        <div class="page" id="page2">
+            <div class="img-box">
+                <img src="https://cdn.phototourl.com/free/2026-08-12-595469b1-d03b-410a-bd17-4c2f584e71c6.jpg" alt="รูปสาวน่ารัก 2">
             </div>
-            <input type="file" id="file2" class="hidden-input" accept="image/*" onchange="previewImage(this, 'preview2')">
-
-            <div class="funny-caption-box" onclick="randomShake(this)">
-                <p id="cap2">แอบยิ้มอยู่มั้ยหน่ะ 🤔</p>
-                <div class="click-tip">(จิ้มจิ้มหน่อย)</div>
-            </div>
-            <button class="btn-next" onclick="nextStep(3, event)">ถัดไป </button>
+            <h1>ยิ้มรึยังเนี่ยยย 🤔</h1>
+            <p class="sub-text">แอบยิ้มมั้ยน่ะ</p>
+            <button class="btn" onclick="nextPage(3)">Next ➔</button>
         </div>
 
-        <!-- หน้าที่ 3 -->
-        <div class="step" id="step3">
-            <h1>ชอบตอนคุนยิ้มที่สุดแล้ว</h1>
-            <div class="img-card" onclick="triggerUpload(3)">
-                <img id="preview3" src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=500&q=80" alt="รูปที่ 3">
-                <div class="upload-hint">📷 แตะเพื่อเปลี่ยนรูปภาพ</div>
+        <!-- Page 3: ยิ้มน่ารักนะ -->
+        <div class="page" id="page3">
+            <div class="img-box">
+                <img src="https://cdn.phototourl.com/free/2026-08-12-2e4e8190-6617-46a1-9e50-fdf0307250ae.jpg" alt="รูปสาวน่ารัก 3">
             </div>
-            <input type="file" id="file3" class="hidden-input" accept="image/*" onchange="previewImage(this, 'preview3')">
-
-            <div class="funny-caption-box" onclick="randomShake(this)">
-                <p id="cap3">ผมว่าผมชอบคุนหว่ะ 🫠</p>
-                <div class="click-tip">(จิ้มจิ้มเร้ว)</div>
-            </div>
-            <button class="btn-next" onclick="nextStep(4, event)">ถัดไป </button>
+            <h1>ยิ้มจากคุนก้น่ารักเสมอนั่นแหละ ห้าห้าห้า</h1>
+            <p class="sub-text">มีน้ามตา ผมว่าผมคิดถึงคุนมากเลยหว่ะ</p>
+            <button class="btn" onclick="nextPage(4)">Next ➔</button>
         </div>
 
-        <!-- หน้าที่ 4 -->
-        <div class="step" id="step4">
-            <h1>ตั้งใจตั้งใจอ่านนะขอให้คะแนนออกมาดีๆคับ🐽🐽</h1>
-            <div class="img-card" onclick="triggerUpload(4)">
-                <img id="preview4" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=500&q=80" alt="รูปที่ 4">
-                <div class="upload-hint">📷 แตะเพื่อเปลี่ยนรูปภาพ</div>
+        <!-- Page 4: ตั้งใจทำงานนะ -->
+        <div class="page" id="page4">
+            <div class="img-box">
+                <img src="https://cdn.phototourl.com/free/2026-08-12-efd4ce3a-23f8-427c-bb20-5b09c84033a9.jpg" alt="รูปสาวน่ารัก 4">
             </div>
-            <input type="file" id="file4" class="hidden-input" accept="image/*" onchange="previewImage(this, 'preview4')">
-
-            <div class="funny-caption-box" onclick="randomShake(this)">
-                <p id="cap4">เหนื่อยก็พัก แต่อย่านานเกินเดี๋ยวเราคิดถึงน่ะ </p>
-                <div class="click-tip">(จิ้มจิ้มสิ้)</div>
-            </div>
-            <button class="btn-next" onclick="nextStep(5, event)">last</button>
+            <h1>ตั้งใจทำงานนะคับ ^^</h1>
+            <p class="sub-text">ขอให้คะแนน ออกมาดีดี สาธุน้าา<br>แต่ก่อนไปอ่านหนังสือ มาเล่นเกมก่อน</p>
+            <button class="btn" onclick="nextPage(5)">Go Go ➔</button>
         </div>
 
-        <!-- หน้าที่ 5 -->
-        <div class="step" id="step5">
-            <h1>เป็นกำลังใจให้เสมอเลยนะ ไม่อยากให้เครียดขอให้ผลออกมาดี:p</h1>
-            <div class="img-card" onclick="triggerUpload(5)">
-                <img id="preview5" src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=500&q=80" alt="รูปที่ 5">
-                <div class="upload-hint">📷 แตะเพื่อเปลี่ยนรูปภาพ</div>
+        <!-- Page 5: Quiz ข้อที่ 1 -->
+        <div class="page" id="page5">
+            <div class="img-box">
+                <img src="https://cdn.phototourl.com/free/2026-08-12-5edf056a-ccfe-4ac5-bcb0-df84712d5ee8.jpg" alt="รูปกวนๆ 1">
             </div>
-            <input type="file" id="file5" class="hidden-input" accept="image/*" onchange="previewImage(this, 'preview5')">
-
-            <div class="funny-caption-box" onclick="randomShake(this)">
-                <p id="cap5">นึกไม่ถึงแต่คิดถึงนะ</p>
-                <div class="click-tip">(จิ้มจิ้มจิ้ม)</div>
+            <h1>คำถามข้อที่ 1</h1>
+            <p class="sub-text">ถ้าตอนนี้หิวข้าว ต้องทำยังไง?</p>
+            <div class="quiz-options">
+                <button class="opt-btn" onclick="wrongAnswer('คิดถึง')">1. ไปหาอะไรกินสิ</button>
+                <button class="opt-btn" onclick="wrongAnswer('คิดถึงมาก')">2. สั่งข้าว</button>
+                <button class="opt-btn" onclick="wrongAnswer('คิดถึงมากมาก')">3. ทนหิวต่อไป</button>
+                <button class="opt-btn" onclick="wrongAnswer('คิดถึงมากมากมาก')">4. อ้อนเธอให้ซื้อให้</button>
             </div>
-            <button class="btn-next" onclick="nextStep(1, event)">วนกลับไปดูคนน่ารัก</button>
         </div>
 
-        <!-- Dots Indicator -->
-        <div class="dots-container">
-            <div class="dot active" id="dot1"></div>
-            <div class="dot" id="dot2"></div>
-            <div class="dot" id="dot3"></div>
-            <div class="dot" id="dot4"></div>
-            <div class="dot" id="dot5"></div>
+        <!-- Page 6: Quiz ข้อที่ 2 -->
+        <div class="page" id="page6">
+            <div class="img-box">
+                <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=500&q=80" alt="รูปกวนๆ 2">
+            </div>
+            <h1>คำถามข้อที่ 2 </h1>
+            <p class="sub-text">วิชาอะไรเรียนยากที่สุดในโลก</p>
+            <div class="quiz-options">
+                <button class="opt-btn" onclick="wrongAnswer('คิดถึง')">1. แคลคูลัส 3</button>
+                <button class="opt-btn" onclick="wrongAnswer('คิดถึงมาก')">2. ฟิสิกส์ควอนตัม</button>
+                <button class="opt-btn" onclick="wrongAnswer('คิดถึงมากมาก')">3. วิชาหักห้ามใจไม่ให้ชอบเธอ</button>
+                <button class="opt-btn" onclick="wrongAnswer('คิดถึงมากมากมาก')">4. ถูกทุกข้อ</button>
+            </div>
         </div>
+
+        <!-- Page 7: Quiz ข้อที่ 3 -->
+        <div class="page" id="page7">
+            <div class="img-box">
+                <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=500&q=80" alt="รูปกวนๆ 3">
+            </div>
+            <h1>คำถามข้อที่ 3 </h1>
+            <p class="sub-text">น่ารักขนาดนี้ มีแฟนึยังน้ะ</p>
+            <div class="quiz-options">
+                <button class="opt-btn" onclick="wrongAnswer('คิดถึง')">1. ยังไม่มี โสดจีบได้</button>
+                <button class="opt-btn" onclick="wrongAnswer('คิดถึงมาก')">2. มีแล้ว แต่หลบอยู่</button>
+                <button class="opt-btn" onclick="wrongAnswer('คิดถึงมากมาก')">3. โสดแต่ไม่ว่าง กำลังน่ารักอยู่</button>
+                <button class="opt-btn" onclick="wrongAnswer('คิดถึงมากมากมาก')">4. กำลังรอคนส่งเว็บนี้มาจีบอยู่</button>
+            </div>
+        </div>
+
+        <!-- Page 8: Quiz ข้อที่ 4 -->
+        <div class="page" id="page8">
+            <div class="img-box">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=500&q=80" alt="รูปกวนๆ 4">
+            </div>
+            <h1>คำถามข้อที่ 4 </h1>
+            <p class="sub-text">โตขึ้นคุนอยากเป็นอะไรมากที่สุด</p>
+            <div class="quiz-options">
+                <button class="opt-btn" onclick="wrongAnswer('คิดถึง')">1. เศรษฐีเงินหนา</button>
+                <button class="opt-btn" onclick="wrongAnswer('คิดถึงมาก')">2. เจ้าของธุรกิจพันล้าน</button>
+                <button class="opt-btn" onclick="wrongAnswer('คิดถึงมากมาก')">3. แมวแมวส้มตัวอ้วน</button>
+                <button class="opt-btn" onclick="wrongAnswer('คิดถึงมากมากมาก')">4. เป็นคนของเธอไง</button>
+            </div>
+        </div>
+
+        <!-- Page 9: Quiz ข้อที่ 5 -->
+        <div class="page" id="page9">
+            <div class="img-box">
+                <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=500&q=80" alt="รูปกวนๆ 5">
+            </div>
+            <h1>คำถามข้อที่ 5 (ข้อสุดท้าย) </h1>
+            <p class="sub-text">รู้ไหมว่าคนส่งเว็บนี้ให้ รู้สึกยังไง?</p>
+            <div class="quiz-options">
+                <button class="opt-btn" onclick="wrongAnswer('คิดถึง')">1. อยากกวนประสาท</button>
+                <button class="opt-btn" onclick="wrongAnswer('คิดถึงมาก')">2. ชวนเล่นเกมเฉยๆ</button>
+                <button class="opt-btn" onclick="wrongAnswer('คิดถึงมากมาก')">3. ว่าง ไม่มีอะไรทำ</button>
+                <button class="opt-btn" onclick="wrongAnswer('คิดถึงมากมากมาก')">4. อยากให้พี่อารมณ์ดี</button>
+            </div>
+        </div>
+
+        <!-- Page 10: หน้าจบ/เฉลย (เพิ่มช่องใส่รูปภาพแล้วเรียบร้อย) -->
+        <div class="page" id="page10">
+            <div class="img-box">
+                <!-- สามารถเปลี่ยนลิงก์รูปหน้าสุดท้ายตรงนี้ได้เลยครับ -->
+                <img src="https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=500&q=80" alt="รูปหน้าสุดท้าย">
+            </div>
+            <h1>ยอมแพ้รึยังน้ะ</h1>
+            <p class="sub-text">ตอบข้อไหนก็ผิดหมดน่านแหละน้า<br>เพราะคำตอบที่ถูกต้องของทุกข้อคือ<br><strong style="font-size: 1.3rem; color: #0284c7;">"คิดถึงพี่มากมากหว่ะ ผมว่าผมคิดถึงคุน คำตอบถูกสุดก้อคงเป็นคิดถึงคับ"</strong><br>ตั้งใจอ่านหนังสือคับคับ จาเก้บความคิดถึงไว้นะ 🩵</p>
+            <button class="btn" onclick="nextPage(1)">เล่นอีกรอบ </button>
+        </div>
+
     </div>
 
     <script>
-        // --- 1. Step & Navigation Logic ---
-        function nextStep(stepNumber, event) {
-            // Spawn Floating Emoji Animation
-            if (event) {
-                spawnEmojiPop(event.clientX, event.clientY);
-            }
+        // --- Navigation System ---
+        let currentPage = 1;
+        const totalQuiz = 5;
+        let currentQuizIndex = 1;
 
-            document.querySelectorAll('.step').forEach(step => step.classList.remove('active'));
-            document.querySelectorAll('.dot').forEach(dot => dot.classList.remove('active'));
-
-            document.getElementById(`step${stepNumber}`).classList.add('active');
-            document.getElementById(`dot${stepNumber}`).classList.add('active');
+        function nextPage(pageNum) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(`page${pageNum}`).classList.add('active');
+            currentPage = pageNum;
         }
 
-        // --- 2. Interactive Image Upload Functionality ---
-        function triggerUpload(stepNum) {
-            document.getElementById(`file${stepNum}`).click();
-        }
-
-        function previewImage(input, previewId) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById(previewId).src = e.target.result;
-                }
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-
-        // --- 3. Random Text Shake & Bounce Effect ---
-        function randomShake(element) {
-            const angles = [-8, 8, -5, 5, -12, 12];
-            const scales = [1.08, 0.92, 1.12, 0.95];
-            const randomAngle = angles[Math.floor(Math.random() * angles.length)];
-            const randomScale = scales[Math.floor(Math.random() * scales.length)];
+        function wrongAnswer(answerText) {
+            const alertBox = document.getElementById('alertBox');
+            const detail = document.getElementById('wrongAnswerDetail');
             
-            element.style.transform = `scale(${randomScale}) rotate(${randomAngle}deg)`;
-            setTimeout(() => {
-                element.style.transform = 'scale(1) rotate(0deg)';
-            }, 300);
+            detail.innerHTML = `เฉลยที่ถูกต้องคือ: <span>"${answerText}"</span> ต่างหากล่ะ! 🤪`;
+            alertBox.classList.add('show');
         }
 
-        // --- 4. Emoji Pop Effect on Click ---
-        const emojis = ['🩵', '✨', '🐰', '💖', '☁️', '🤏', '🌸'];
-        function spawnEmojiPop(x, y) {
-            const emoji = document.createElement('div');
-            emoji.className = 'emoji-pop';
-            emoji.innerText = emojis[Math.floor(Math.random() * emojis.length)];
-            emoji.style.left = `${x}px`;
-            emoji.style.top = `${y}px`;
-            document.body.appendChild(emoji);
-
-            setTimeout(() => {
-                emoji.remove();
-            }, 1000);
+        function closeAlert() {
+            document.getElementById('alertBox').classList.remove('show');
+            // พอตอบผิด ให้ไปข้อถัดไปทันที
+            currentQuizIndex++;
+            if (currentQuizIndex <= totalQuiz) {
+                nextPage(4 + currentQuizIndex); // Quiz เริ่มที่ Page 5
+            } else {
+                nextPage(10); // ไปหน้าจบ (Page 10)
+                currentQuizIndex = 1; // reset
+            }
         }
 
-        // --- 5. Slow Floating Bunny, Cloud, Heart Particles ---
-        const particleCanvas = document.getElementById('particle-canvas');
-        const pCtx = particleCanvas.getContext('2d');
+        // --- Canvas Background (Slow Floating Bunny, Clouds, Hearts & Mouse Trail) ---
+        const canvas = document.getElementById('bgCanvas');
+        const ctx = canvas.getContext('2d');
 
-        function resizeParticleCanvas() {
-            particleCanvas.width = window.innerWidth;
-            particleCanvas.height = window.innerHeight;
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
         }
-        resizeParticleCanvas();
-        window.addEventListener('resize', resizeParticleCanvas);
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
 
-        const items = ['🐰', '☁️', '🩵', '🤍', '✨', '🌸', '🧸'];
-        const particles = [];
+        // Canvas Particle Items
+        const floatingItems = [];
+        const mouseTrail = [];
+        const icons = ['🐰', '☁️', '🩵', '✨', '☁️', '🤍'];
 
-        class SlowParticle {
+        class FloatingParticle {
             constructor() {
                 this.reset();
             }
 
             reset() {
-                this.x = Math.random() * particleCanvas.width;
-                this.y = particleCanvas.height + 60;
-                this.size = Math.random() * 18 + 18;
-                this.speedY = Math.random() * 0.6 + 0.3; // ลอยขึ้นช้าๆ
-                this.speedX = Math.sin(Math.random() * Math.PI) * 0.4 - 0.2;
-                this.symbol = items[Math.floor(Math.random() * items.length)];
-                this.opacity = Math.random() * 0.5 + 0.4;
+                this.x = Math.random() * canvas.width;
+                this.y = canvas.height + Math.random() * 100;
+                this.speed = 0.3 + Math.random() * 0.5; // ลอยขึ้นช้าๆ ฟีลความฝัน
+                this.icon = icons[Math.floor(Math.random() * icons.length)];
+                this.size = 18 + Math.random() * 20;
+                this.opacity = 0.3 + Math.random() * 0.5;
+                this.swing = Math.random() * 2;
+                this.swingSpeed = 0.01 + Math.random() * 0.02;
             }
 
             update() {
-                this.y -= this.speedY;
-                this.x += this.speedX;
+                this.y -= this.speed;
+                this.swing += this.swingSpeed;
+                this.x += Math.sin(this.swing) * 0.5;
+
                 if (this.y < -50) {
                     this.reset();
                 }
             }
 
             draw() {
-                pCtx.globalAlpha = this.opacity;
-                pCtx.font = `${this.size}px Arial`;
-                pCtx.fillText(this.symbol, this.x, this.y);
+                ctx.save();
+                ctx.globalAlpha = this.opacity;
+                ctx.font = `${this.size}px sans-serif`;
+                ctx.fillText(this.icon, this.x, this.y);
+                ctx.restore();
             }
         }
 
-        for (let i = 0; i < 28; i++) {
-            particles.push(new SlowParticle());
+        // สร้าง Floating Particles 35 ตัว
+        for (let i = 0; i < 35; i++) {
+            floatingItems.push(new FloatingParticle());
         }
 
-        function animateParticles() {
-            pCtx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
-            particles.forEach(p => {
-                p.update();
-                p.draw();
+        // Mouse Trail Effect
+        window.addEventListener('mousemove', (e) => {
+            for (let i = 0; i < 2; i++) {
+                mouseTrail.push({
+                    x: e.clientX + (Math.random() - 0.5) * 10,
+                    y: e.clientY + (Math.random() - 0.5) * 10,
+                    size: 3 + Math.random() * 6,
+                    color: `hsl(${190 + Math.random() * 20}, 100%, 75%)`,
+                    alpha: 1,
+                    vx: (Math.random() - 0.5) * 1,
+                    vy: (Math.random() - 0.5) * 1 - 0.5
+                });
+            }
+        });
+
+        // Loop วาด Animation ทั้งหมด
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // วาด Background Elements (กระต่าย/เมฆ/หัวใจ ลอยช้าๆ)
+            floatingItems.forEach(item => {
+                item.update();
+                item.draw();
             });
-            requestAnimationFrame(animateParticles);
-        }
-        animateParticles();
 
-        // --- 6. Mouse Trail Effect (ละอองดาววิ้งๆ ตามเมาส์/สัมผัส) ---
-        const sparkleCanvas = document.getElementById('sparkle-canvas');
-        const sCtx = sparkleCanvas.getContext('2d');
+            // วาด Mouse Trail (ละอองดาวตามเมาส์)
+            for (let i = mouseTrail.length - 1; i >= 0; i--) {
+                const p = mouseTrail[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.alpha -= 0.02;
 
-        function resizeSparkleCanvas() {
-            sparkleCanvas.width = window.innerWidth;
-            sparkleCanvas.height = window.innerHeight;
-        }
-        resizeSparkleCanvas();
-        window.addEventListener('resize', resizeSparkleCanvas);
-
-        const sparkles = [];
-
-        class Sparkle {
-            constructor(x, y) {
-                this.x = x;
-                this.y = y;
-                this.size = Math.random() * 5 + 2;
-                this.speedX = (Math.random() - 0.5) * 1.6;
-                this.speedY = (Math.random() - 0.5) * 1.6;
-                this.color = `hsl(${Math.random() * 40 + 180}, 100%, 75%)`; // โทนฟ้าพาสเทลวิ้ง
-                this.opacity = 1;
-                this.decay = Math.random() * 0.02 + 0.015;
-            }
-
-            update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
-                this.opacity -= this.decay;
-            }
-
-            draw() {
-                sCtx.save();
-                sCtx.globalAlpha = Math.max(0, this.opacity);
-                sCtx.fillStyle = this.color;
-                sCtx.beginPath();
-                sCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                sCtx.fill();
-                sCtx.restore();
-            }
-        }
-
-        function addSparkles(e) {
-            const x = e.clientX || (e.touches && e.touches[0].clientX);
-            const y = e.clientY || (e.touches && e.touches[0].clientY);
-            if (x && y) {
-                for (let i = 0; i < 2; i++) {
-                    sparkles.push(new Sparkle(x, y));
+                if (p.alpha <= 0) {
+                    mouseTrail.splice(i, 1);
+                } else {
+                    ctx.save();
+                    ctx.globalAlpha = p.alpha;
+                    ctx.fillStyle = p.color;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
                 }
             }
+
+            requestAnimationFrame(animate);
         }
 
-        window.addEventListener('mousemove', addSparkles);
-        window.addEventListener('touchmove', addSparkles);
-
-        function animateSparkles() {
-            sCtx.clearRect(0, 0, sparkleCanvas.width, sparkleCanvas.height);
-            for (let i = sparkles.length - 1; i >= 0; i--) {
-                sparkles[i].update();
-                sparkles[i].draw();
-                if (sparkles[i].opacity <= 0) {
-                    sparkles.splice(i, 1);
-                }
-            }
-            requestAnimationFrame(animateSparkles);
-        }
-        animateSparkles();
+        animate();
     </script>
 </body>
 </html>
