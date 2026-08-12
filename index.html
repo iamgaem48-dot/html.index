@@ -228,8 +228,7 @@
         <!-- Page 1: ยิ้มหน่อย -->
         <div class="page active" id="page1">
             <div class="img-box">
-                <!-- เปลี่ยน URL รูปตามต้องการ -->
-                <img src="https://cdn.phototourl.com/free/2026-08-12-5edf056a-ccfe-4ac5-bcb0-df84712d5ee8.jpg"
+                <img src="https://cdn.phototourl.com/free/2026-08-12-5edf056a-ccfe-4ac5-bcb0-df84712d5ee8.jpg">
             </div>
             <h1>ส่งมากวนให้รู้ว่าคิดถึงถ้าคนอ่านหน้าบึ้งคงเสียใจแย่</h1>
             <p class="sub-text">ไหนยิ้มยัง</p>
@@ -239,7 +238,7 @@
         <!-- Page 2: ยิ้มรึยัง -->
         <div class="page" id="page2">
             <div class="img-box">
-                <img src="https://cdn.phototourl.com/free/2026-08-12-be9635df-76f7-440a-93dc-2f6c8e89db84.jpg" 
+                <img src="https://cdn.phototourl.com/free/2026-08-12-be9635df-76f7-440a-93dc-2f6c8e89db84.jpg">
             </div>
             <h1>มีน้ามตา คิดถึงเกินก้อแบบนี้แหละ</h1>
             <p class="sub-text">ฝนที่ตกอาจจะเป็นน้ำตาเราก็ได้นะ</p>
@@ -249,7 +248,7 @@
         <!-- Page 3: ยิ้มน่ารักนะ -->
         <div class="page" id="page3">
             <div class="img-box">
-                <img src="https://cdn.phototourl.com/free/2026-08-12-05d63a3c-b522-4bb7-93e8-5d44489596ed.jpg"
+                <img src="https://cdn.phototourl.com/free/2026-08-12-05d63a3c-b522-4bb7-93e8-5d44489596ed.jpg">
             </div>
             <h1>น่ารักน้าน่ารักน้า</h1>
             <p class="sub-text">น่ารักมั้ย</p>
@@ -259,17 +258,17 @@
         <!-- Page 4: ตั้งใจทำงานนะ -->
         <div class="page" id="page4">
             <div class="img-box">
-                <img src="https://cdn.phototourl.com/free/2026-08-12-ecbb9b5a-b4d9-4084-8fd5-adf5e202692e.jpg"
+                <img src="https://cdn.phototourl.com/free/2026-08-12-ecbb9b5a-b4d9-4084-8fd5-adf5e202692e.jpg">
             </div>
             <h1>ตั้งใจอ่านหนังสือคับ </h1>
             <p class="sub-text">ขอให้คะแนน ออกมาดีๆ สาทุ้สาทุ้<br>แต่ก่อนไปอ่านหนังสือ มาเล่นเกมก่อน</p>
-            <button class="btn" onclick="nextPage(5)">Go Go ➔</button>
+            <button class="btn" onclick="restartQuizAndNext(5)">Go Go ➔</button>
         </div>
 
         <!-- Page 5: Quiz ข้อที่ 1 -->
         <div class="page" id="page5">
             <div class="img-box">
-                <img src="https://cdn.phototourl.com/free/2026-08-12-1baf10e7-e32e-46fe-ad14-08e1935cbb89.jpg"
+                <img src="https://cdn.phototourl.com/free/2026-08-12-1baf10e7-e32e-46fe-ad14-08e1935cbb89.jpg">
             </div>
             <h1>คำถามข้อที่ 1 ❓</h1>
             <p class="sub-text">ถ้าตอนนี้หิวข้าว ต้องทำยังไง</p>
@@ -363,6 +362,11 @@
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(`page${pageNum}`).classList.add('active');
             currentPage = pageNum;
+        }
+
+        function restartQuizAndNext(pageNum) {
+            currentQuizIndex = 1;
+            nextPage(pageNum);
         }
 
         function wrongAnswer(answerText) {
