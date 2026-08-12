@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>มีข้อความสุดพิเศษส่งถึงเธอ... ✨🩵</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mitr:wght@300;400;500;600&family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ==========================================
+           1. CORE & GLOBAL STYLES
+           ========================================== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Prompt', 'Mitr', sans-serif;
+            user-select: none;
+        }
+
+        body {
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #e0f7fa 0%, #b3e5fc 40%, #e1f5fe 70%, #bbdefb 100%);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            overflow: hidden;
+            position: relative;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Canvas สำหรับประกายดาวตามเมาส์ */
+        #trail-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* ==========================================
+           2. FLOATING BACKGROUND ELEMENTS
+           ========================================== */
+        #bunny-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .floating-item {
+            position: absolute;
+            user-select: none;
+            pointer-events: none;
+            animation: floatUp linear infinite;
+            opacity: 0;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.05));
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(105vh) rotate(0deg) scale(0.8);
+                opacity: 0;
+            }
+            15% {
+                opacity: 0.75;
+            }
+            85% {
+                opacity: 0.75;
+            }
+            100% {
+                transform: translateY(-15vh) rotate(25deg) scale(1.1);
+                opacity: 0;
+            }
+        }
+
+        /* ==========================================
+           3. MAIN CONTAINER & GLASS CARD
+           ========================================== */
+        .main-container {
+            position: relative;
+            z-index: 10;
+            width: 90%;
+            max-width: 480px;
+            perspective: 1000px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.78);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 2px solid rgba(255, 255, 255, 0.9);
+            border-radius: 35px;
+            padding: 35px 25px;
+            text-align: center;
+            box-shadow: 0 25px 50px rgba(3, 169, 244, 0.2),
+                        inset 0 0 15px rgba(255, 255, 255, 0.6);
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 30px 60px rgba(3, 169, 244, 0.3),
+                        inset 0 0 20px rgba(255, 255, 255, 0.8);
+        }
+
+        /* ==========================================
+           4. AUDIO CONTROLLER
+           ========================================== */
+        .audio-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.85);
+            border: 2px solid #81d4fa;
+            border-radius: 50px;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            font-size: 0.85rem;
+            color: #0277bd;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .audio-btn:hover {
+            transform: scale(1.05);
+            background: #ffffff;
+        }
+
+        .music-note {
+            position: absolute;
+            color: #29b6f6;
+            font-size: 1.2rem;
+            pointer-events: none;
+            animation: floatNote 2s ease-out forwards;
+        }
+
+        @keyframes floatNote {
+            0% { opacity: 1; transform: translate(0, 0) scale(0.8); }
+            100% { opacity: 0; transform: translate(-20px, -40px) scale(1.3); }
+        }
+
+        /* ==========================================
+           5. INTERACTIVE BUNNY CHARACTER
+           ========================================== */
+        .bunny-wrapper {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 15px auto;
+            cursor: pointer;
+        }
+
+        .bunny-avatar {
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4.5rem;
+            box-shadow: 0 10px 25px rgba(129, 212, 250, 0.4);
+            border: 4px solid #e0f7fa;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: gentleBounce 3s infinite ease-in-out;
+        }
+
+        .bunny-avatar:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .bunny-avatar:active {
+            transform: scale(0.95);
+        }
+
+        @keyframes gentleBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .speech-bubble {
+            position: absolute;
+            top: -25px;
+            right: -30px;
+            background: #0288d1;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.3s ease;
+            pointer-events: none;
+            white-space: nowrap;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 15px;
+            border-width: 5px 5px 0;
+            border-style: solid;
+            border-color: #0288d1 transparent;
+        }
+
+        .bunny-wrapper:hover .speech-bubble {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* ==========================================
+           6. CONTENT & SLIDES
+           ========================================== */
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #b2ebf2;
+            transition: all 0.4s ease;
+        }
+
+        .dot.active {
+            width: 28px;
+            border-radius: 10px;
+            background: #0288d1;
+        }
+
+        .content-area {
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .main-title {
+            font-size: 1.4rem;
+            color: #0277bd;
+            font-weight: 600;
+            line-height: 1.5;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .sub-text {
+            font-size: 0.95rem;
+            color: #546e7a;
+            margin-top: 10px;
+            font-weight: 400;
+        }
+
+        /* ==========================================
+           7. INTERACTIVE MINI-GAMES / COMPONENTS
+           ========================================== */
+        
+        /* Checklist Game */
+        .checklist-container {
+            width: 100%;
+            text-align: left;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .check-item {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 15px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            color: #0277bd;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid #b2ebf2;
+        }
+
+        .check-item:hover {
+            background: #e0f7fa;
+            transform: translateX(3px);
+        }
+
+        .check-item input {
+            accent-color: #0288d1;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        /* Fortune Cookie / เสียมซี */
+        .fortune-box {
+            display: none;
+            margin-top: 15px;
+            width: 100%;
+        }
+
+        .fortune-btn {
+            background: #e1f5fe;
+            border: 2px dashed #0288d1;
+            color: #0277bd;
+            padding: 12px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .fortune-btn:hover {
+            background: #b2ebf2;
+            transform: scale(1.02);
+        }
+
+        .fortune-result {
+            margin-top: 12px;
+            font-size: 0.95rem;
+            color: #01579b;
+            background: #ffffff;
+            padding: 12px;
+            border-radius: 15px;
+            display: none;
+            animation: fadeIn 0.5s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        /* ==========================================
+           8. BUTTONS & CONTROLS
+           ========================================== */
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #4fc3f7 0%, #0288d1 100%);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            font-size: 1.05rem;
+            font-weight: 500;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(3, 169, 244, 0.35);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            outline: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 12px 25px rgba(3, 169, 244, 0.45);
+            background: linear-gradient(135deg, #81d4fa 0%, #0277bd 100%);
+        }
+
+        .btn:active {
+            transform: translateY(1px) scale(0.98);
+        }
+
+        .btn-secondary {
+            background: #ffffff;
+            color: #0288d1;
+            border: 2px solid #b2ebf2;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .btn-secondary:hover {
+            background: #e0f7fa;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+        }
+
+        /* ==========================================
+           9. CELEBRATION & EXTRA EFFECTS
+           ========================================== */
+        .firework {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: explode 1s ease-out forwards;
+        }
+
+        @keyframes explode {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { transform: translate(var(--dx), var(--dy)) scale(0); opacity: 0; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive Adjustments */
+        @media (max-height: 650px) {
+            .card { padding: 20px 20px; }
+            .bunny-wrapper { width: 90px; height: 90px; margin-bottom: 10px; }
+            .bunny-avatar { font-size: 3.5rem; }
+            .content-area { min-height: 140px; }
+            .main-title { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Web Audio BGM (Web Audio API Synthesizer) -->
+    <button class="audio-btn" id="audioToggle" onclick="toggleAudio()">
+        <span id="audioIcon">🎵</span> <span id="audioText">เปิดเพลงบรรยากาศ</span>
+    </button>
+
+    <!-- Canvas สำหรับเอฟเฟกต์เมาส์ดาวตก -->
+    <canvas id="trail-canvas"></canvas>
+
+    <!-- Container สำหรับกระต่ายลอยในพื้นหลัง -->
+    <div id="bunny-container"></div>
+
+    <!-- Main Card Container -->
+    <div class="main-container">
+        <div class="card" id="mainCard">
+            
+            <!-- Step Indicators -->
+            <div class="step-indicator" id="stepDots">
+                <div class="dot active"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+
+            <!-- Interactive Bunny Character -->
+            <div class="bunny-wrapper" onclick="pokeBunny()">
+                <div class="speech-bubble" id="bunnySpeech">จิ้มเค้าทำไมเหรอ? 💖</div>
+                <div class="bunny-avatar" id="bunnyAvatar">🐰</div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <div class="main-title" id="mainTitle">ยิ้มหน่อยสิคนดี... 😊</div>
+                <div class="sub-text" id="subText">วันนี้เหนื่อยรึเปล่า? ลองกดปุ่มด้านล่างดูสิ</div>
+
+                <!-- Checklist Mini-game (Step 2) -->
+                <div class="checklist-container" id="checklist">
+                    <div class="check-item" onclick="toggleCheck(this)">
+                        <input type="checkbox" readonly> <span>ทานข้าวอิ่มอร่อยแล้ว 🍚</span>
+                    </div>
+                    <div class="check-item" onclick="toggleCheck(this)">
+                        <input type="checkbox" readonly> <span>ดื่มน้ำเพียงพอแล้ว 💧</span>
+                    </div>
+                    <div class="check-item" onclick="toggleCheck(this)">
+                        <input type="checkbox" readonly> <span>ยิ้มให้ตัวเองหน้ากระจก 🪞</span>
+                    </div>
+                    <div class="check-item" onclick="toggleCheck(this)">
+                        <input type="checkbox" readonly> <span>เตรียมรับความรักจากคนส่ง 🩵</span>
+                    </div>
+                </div>
+
+                <!-- Fortune Cookie (Step 3) -->
+                <div class="fortune-box" id="fortuneBox">
+                    <button class="fortune-btn" onclick="drawFortune()">🔮 กดสุ่มคำอวยพรประจำวัน!</button>
+                    <div class="fortune-result" id="fortuneResult"></div>
+                </div>
+            </div>
+
+            <!-- Button Group -->
+            <div class="btn-group">
+                <button class="btn btn-secondary" id="prevBtn" onclick="prevStep()" style="display: none;">กลับ</button>
+                <button class="btn" id="nextBtn" onclick="nextStep()">ถัดไป ✨</button>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        /* ==========================================
+           1. DATA STRUCTURE & STEPS CONFIGURATION
+           ========================================== */
+        const stepsData = [
+            {
+                title: "ยิ้มหน่อยสิคนดี... 😊",
+                subText: "วันนี้ไม่ว่าจะเจออะไรมา ลองสูดหายใจลึกๆ แล้วยิ้มหน่อยนะ",
+                icon: "🐰",
+                speech: "จิ้มเค้าทำไมเหรอ? 💖",
+                showChecklist: false,
+                showFortune: false
+            },
+            {
+                title: "ไหน... ยิ้มรึยังน้าาา? 🤔",
+                subText: "ก่อนจะไปต่อ ขอเช็กความพร้อมความน่ารักหน่อยสิ!",
+                icon: "🐰💭",
+                speech: "แอบมองอยู่นะ! 👀",
+                showChecklist: true,
+                showFortune: false
+            },
+            {
+                title: "ยิ้มน่ารักที่สุดเลยนะเราน่ะ! 🩵✨",
+                subText: "รอยยิ้มของคุณทำให้โลกนี้สดใสขึ้น 300% เลยรู้ไหม?",
+                icon: "🐰💖",
+                speech: "น่ารักจนใจเจ็บ! 💘",
+                showChecklist: false,
+                showFortune: true
+            },
+            {
+                title: "ตั้งใจทำงาน / เรียนนะครับ! 📚✍️",
+                subText: "ขอให้คะแนนและผลงานออกมาดีๆ สมกับความตั้งใจเลยนะ!",
+                icon: "🐰💯",
+                speech: "สู้ๆ นะครับคนเก่ง! ✌️",
+                showChecklist: false,
+                showFortune: false
+            },
+            {
+                title: "ส่งกำลังใจให้เต็มร้อย! 🩵🎉",
+                subText: "เค้าคอยเป็นกำลังใจให้เสมอเลยนะ อยู่ตรงนี้แหละ!",
+                icon: "🐰🎀",
+                speech: "รักน้าาาา~ 💙",
+                showChecklist: false,
+                showFortune: false
+            }
+        ];
+
+        const fortunes = [
+            "✨ วันนี้คุณจะทำทุกอย่างผ่านพ้นไปด้วยดีแบบ Easy Easy!",
+            "💯 คะแนนเต็ม / งานปังแน่นอน สาธุๆ!",
+            "🩵 มีคนคิดถึงคุณอยู่ตลอดเวลา (คนส่งเว็บนี้ไง!)",
+            "🌟 วันนี้ความสดใสของคุณจะทำให้ทุกคนยิ้มตาม",
+            "🎁 จะได้รับข่าวดี หรือของอร่อยถูกใจในเร็วๆ นี้!"
+        ];
+
+        const bunnyPokeTexts = [
+            "งึมๆ อย่าจิ้มบ่อยสิเค้าเขิน! 🙈",
+            "ยิ้มยังๆ? ยิ้มแล้วน่ารักมากเลยนะ! 💕",
+            "ส่งพลังความรัก จี๊ดๆ~ ⚡🩵",
+            "ขอให้วันนี้เป็นวันที่ดีของคุณนะ! 🌈",
+            "สู้ๆ นะครับ เค้าอยู่ข้างๆ เสมอ! 🧸"
+        ];
+
+        let currentStep = 0;
+
+        /* ==========================================
+           2. STEP NAVIGATION & RENDER LOGIC
+           ========================================== */
+        function updateStep() {
+            const data = stepsData[currentStep];
+            const titleEl = document.getElementById("mainTitle");
+            const subEl = document.getElementById("subText");
+            const iconEl = document.getElementById("bunnyAvatar");
+            const speechEl = document.getElementById("bunnySpeech");
+            const prevBtn = document.getElementById("prevBtn");
+            const nextBtn = document.getElementById("nextBtn");
+            const checklist = document.getElementById("checklist");
+            const fortuneBox = document.getElementById("fortuneBox");
+
+            // Fade Out Content
+            titleEl.style.opacity = 0;
+            subEl.style.opacity = 0;
+            titleEl.style.transform = "translateY(-10px)";
+
+            setTimeout(() => {
+                titleEl.innerHTML = data.title;
+                subEl.innerHTML = data.subText;
+                iconEl.innerHTML = data.icon;
+                speechEl.innerHTML = data.speech;
+
+                // Toggle Special Components
+                checklist.style.display = data.showChecklist ? "block" : "none";
+                fortuneBox.style.display = data.showFortune ? "block" : "none";
+
+                // Fade In Content
+                titleEl.style.opacity = 1;
+                subEl.style.opacity = 1;
+                titleEl.style.transform = "translateY(0)";
+            }, 250);
+
+            // Update Dots
+            const dots = document.querySelectorAll(".dot");
+            dots.forEach((dot, idx) => {
+                if (idx === currentStep) {
+                    dot.classList.add("active");
+                } else {
+                    dot.classList.remove("active");
+                }
+            });
+
+            // Update Buttons
+            prevBtn.style.display = currentStep > 0 ? "inline-flex" : "none";
+
+            if (currentStep === stepsData.length - 1) {
+                nextBtn.innerHTML = "ส่งกอดก้อนใหญ่! 🤗🩵";
+                nextBtn.style.background = "linear-gradient(135deg, #a5d6a7, #4caf50)";
+                triggerFinaleCelebration();
+            } else {
+                nextBtn.innerHTML = "ถัดไป ✨";
+                nextBtn.style.background = "linear-gradient(135deg, #4fc3f7 0%, #0288d1 100%)";
+            }
+        }
+
+        function nextStep() {
+            if (currentStep < stepsData.length - 1) {
+                currentStep++;
+                updateStep();
+                createBurstEffect();
+            } else {
+                // หากกดปุ่มหน้าสุดท้าย
+                triggerFireworks();
+                const speechEl = document.getElementById("bunnySpeech");
+                speechEl.innerHTML = "กอดๆ น้าาา! 🥰";
+                speechEl.style.opacity = 1;
+                speechEl.style.transform = "scale(1.2)";
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 0) {
+                currentStep--;
+                updateStep();
+            }
+        }
+
+        /* ==========================================
+           3. INTERACTIVE COMPONENTS LOGIC
+           ========================================== */
+        function pokeBunny() {
+            const iconEl = document.getElementById("bunnyAvatar");
+            const speechEl = document.getElementById("bunnySpeech");
+            
+            // Random Poke Reaction
+            const randomText = bunnyPokeTexts[Math.floor(Math.random() * bunnyPokeTexts.length)];
+            speechEl.innerText = randomText;
+            speechEl.style.opacity = 1;
+            speechEl.style.transform = "scale(1.1)";
+
+            iconEl.style.transform = "scale(1.25) rotate(10deg)";
+            setTimeout(() => {
+                iconEl.style.transform = "scale(1) rotate(0deg)";
+            }, 300);
+
+            createHeartBurstAroundBunny();
+        }
+
+        function toggleCheck(element) {
+            const checkbox = element.querySelector("input");
+            checkbox.checked = !checkbox.checked;
+            if(checkbox.checked) {
+                element.style.background = "#e0f7fa";
+                element.style.borderColor = "#4fc3f7";
+            } else {
+                element.style.background = "rgba(255, 255, 255, 0.9)";
+                element.style.borderColor = "#b2ebf2";
+            }
+        }
+
+        function drawFortune() {
+            const resultEl = document.getElementById("fortuneResult");
+            const randomFortune = fortunes[Math.floor(Math.random() * fortunes.length)];
+            
+            resultEl.style.display = "block";
+            resultEl.innerHTML = randomFortune;
+            createBurstEffect();
+        }
+
+        /* ==========================================
+           4. BACKGROUND FLOATING ANIMATION
+           ========================================== */
+        function createFloatingElements() {
+            const container = document.getElementById("bunny-container");
+            const items = ["🐰", "🐇", "☁️", "🩵", "✨", "🤍", "🧸", "🌸"];
+            const totalItems = 20;
+
+            for (let i = 0; i < totalItems; i++) {
+                const el = document.createElement("div");
+                el.className = "floating-item";
+                el.innerText = items[Math.floor(Math.random() * items.length)];
+                
+                // Randomize Properties (Slow Floating)
+                el.style.left = `${Math.random() * 100}vw`;
+                el.style.animationDuration = `${12 + Math.random() * 14}s`; // 12s - 26s
+                el.style.animationDelay = `${Math.random() * 12}s`;
+                el.style.fontSize = `${1.2 + Math.random() * 1.6}rem`;
+                
+                container.appendChild(el);
+            }
+        }
+
+        /* ==========================================
+           5. MOUSE TRAIL EFFECT (CANVAS)
+           ========================================== */
+        const canvas = document.getElementById("trail-canvas");
+        const ctx = canvas.getContext("2d");
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener("resize", resizeCanvas);
+        resizeCanvas();
+
+        window.addEventListener("mousemove", (e) => {
+            for (let i = 0; i < 2; i++) {
+                particles.push({
+                    x: e.clientX,
+                    y: e.clientY,
+                    size: Math.random() * 4 + 1,
+                    color: `hsl(${180 + Math.random() * 40}, 80%, 75%)`,
+                    vx: (Math.random() - 0.5) * 1.5,
+                    vy: (Math.random() - 0.5) * 1.5,
+                    life: 1
+                });
+            }
+        });
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particles.length; i++) {
+                let p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.life -= 0.02;
+
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fillStyle = p.color;
+                ctx.globalAlpha = Math.max(0, p.life);
+                ctx.fill();
+
+                if (p.life <= 0) {
+                    particles.splice(i, 1);
+                    i--;
+                }
+            }
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        /* ==========================================
+           6. VISUAL EFFECTS & FIREWORKS
+           ========================================== */
+        function createBurstEffect() {
+            const card = document.getElementById("mainCard");
+            const rect = card.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            for (let i = 0; i < 12; i++) {
+                const p = document.createElement("div");
+                p.className = "firework";
+                p.style.left = `${centerX}px`;
+                p.style.top = `${centerY}px`;
+                p.style.background = `hsl(${180 + Math.random() * 50}, 90%, 60%)`;
+
+                const angle = (Math.PI * 2 / 12) * i;
+                const dist = 60 + Math.random() * 40;
+                p.style.setProperty("--dx", `${Math.cos(angle) * dist}px`);
+                p.style.setProperty("--dy", `${Math.sin(angle) * dist}px`);
+
+                document.body.appendChild(p);
+                setTimeout(() => p.remove(), 1000);
+            }
+        }
+
+        function createHeartBurstAroundBunny() {
+            const bunny = document.querySelector(".bunny-wrapper");
+            const rect = bunny.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            const hearts = ["🩵", "🤍", "✨"];
+            for (let i = 0; i < 6; i++) {
+                const h = document.createElement("div");
+                h.style.position = "absolute";
+                h.style.left = `${centerX}px`;
+                h.style.top = `${centerY}px`;
+                h.style.fontSize = "1.2rem";
+                h.style.pointerEvents = "none";
+                h.innerText = hearts[Math.floor(Math.random() * hearts.length)];
+                h.style.transition = "all 0.8s ease-out";
+                document.body.appendChild(h);
+
+                setTimeout(() => {
+                    const angle = Math.random() * Math.PI * 2;
+                    const dist = 50 + Math.random() * 30;
+                    h.style.transform = `translate(${Math.cos(angle) * dist}px, ${Math.sin(angle) * dist - 20}px) scale(1.3)`;
+                    h.style.opacity = "0";
+                }, 20);
+
+                setTimeout(() => h.remove(), 850);
+            }
+        }
+
+        function triggerFinaleCelebration() {
+            triggerFireworks();
+        }
+
+        function triggerFireworks() {
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    const x = Math.random() * window.innerWidth;
+                    const y = Math.random() * (window.innerHeight * 0.6);
+                    createSingleExplosion(x, y);
+                }, i * 300);
+            }
+        }
+
+        function createSingleExplosion(x, y) {
+            for (let i = 0; i < 20; i++) {
+                const p = document.createElement("div");
+                p.className = "firework";
+                p.style.left = `${x}px`;
+                p.style.top = `${y}px`;
+                p.style.background = `hsl(${180 + Math.random() * 60}, 100%, 70%)`;
+
+                const angle = (Math.PI * 2 / 20) * i;
+                const dist = 80 + Math.random() * 60;
+                p.style.setProperty("--dx", `${Math.cos(angle) * dist}px`);
+                p.style.setProperty("--dy", `${Math.sin(angle) * dist}px`);
+
+                document.body.appendChild(p);
+                setTimeout(() => p.remove(), 1000);
+            }
+        }
+
+        /* ==========================================
+           7. WEB AUDIO API (SOFT BGM SYNTHESIZER)
+           ========================================== */
+        let audioCtx = null;
+        let isPlaying = false;
+        let bgmInterval = null;
+
+        function toggleAudio() {
+            const btnText = document.getElementById("audioText");
+            const btnIcon = document.getElementById("audioIcon");
+
+            if (!isPlaying) {
+                startBGM();
+                isPlaying = true;
+                btnText.innerText = "ปิดเพลงบรรยากาศ";
+                btnIcon.innerText = "🎶";
+                spawnMusicNote();
+            } else {
+                stopBGM();
+                isPlaying = false;
+                btnText.innerText = "เปิดเพลงบรรยากาศ";
+                btnIcon.innerText = "🎵";
+            }
+        }
+
+        function startBGM() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+
+            // Simple Melody Sequence (C Major / Soft Pastel Vibe)
+            const notes = [261.63, 329.63, 392.00, 523.25, 440.00, 392.00, 329.63, 293.66];
+            let noteIndex = 0;
+
+            bgmInterval = setInterval(() => {
+                if (!isPlaying) return;
+                playTone(notes[noteIndex], 0.4);
+                noteIndex = (noteIndex + 1) % notes.length;
+                if (Math.random() > 0.5) spawnMusicNote();
+            }, 600);
+        }
+
+        function stopBGM() {
+            if (bgmInterval) clearInterval(bgmInterval);
+        }
+
+        function playTone(freq, duration) {
+            if (!audioCtx) return;
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+
+                osc.type = "sine";
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+                gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch (e) {
+                console.log("Audio Error:", e);
+            }
+        }
+
+        function spawnMusicNote() {
+            const btn = document.getElementById("audioToggle");
+            const rect = btn.getBoundingClientRect();
+            const note = document.createElement("div");
+            note.className = "music-note";
+            note.innerText = ["🎵", "🎶", "🎼", "🩵"][Math.floor(Math.random() * 4)];
+            note.style.left = `${rect.left + 20}px`;
+            note.style.top = `${rect.top}px`;
+            document.body.appendChild(note);
+
+            setTimeout(() => note.remove(), 2000);
+        }
+
+        /* Initialize Background Elements */
+        createFloatingElements();
+    </script>
+</body>
+</html>
